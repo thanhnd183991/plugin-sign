@@ -1,6 +1,7 @@
 package vt.thanhnd58.utils;
 
 import vt.thanhnd58.constant.PluginConstant;
+import vt.thanhnd58.dto.VersionDTO;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -138,6 +139,23 @@ public class FileUtils {
         } else {
             return false;
         }
+    }
+
+    public static void updateProjectProps() {
+        VersionDTO versionDTO = PluginConstant.getCacheVersionDTO();
+        Properties projectProps = FileUtils.getPropFileFromFolderContainApp(PluginConstant.PROJECT_PROPS);
+        projectProps.put("newVersion", versionDTO.getNewVersion());
+        projectProps.put("required", String.valueOf(versionDTO.isRequired()));
+        projectProps.put("os", versionDTO.getOsName().toString());
+        if (projectProps.get("yourVersion") == null) {
+            projectProps.put("yourVersion", versionDTO.getNewVersion());
+        }
+        if (versionDTO.isUpdater()) {
+            projectProps.put("updater", String.valueOf(true));
+        } else {
+            projectProps.put("updater", String.valueOf(false));
+        }
+        FileUtils.savePropFileFromFolderContainApp(projectProps, PluginConstant.PROJECT_PROPS);
     }
 }
 

@@ -1,5 +1,7 @@
 package vt.thanhnd58.constant;
 
+import vt.thanhnd58.dto.VersionDTO;
+
 public class PluginConstant {
     public static final String PROJECT_PROPS = "project.properties";
     public static final String UPDATE_TITLE = "Cập nhật phần mềm";
@@ -11,4 +13,11 @@ public class PluginConstant {
     public static final String ERROR_DOWNLOAD_UPDATE_FILE = "Lỗi khi tải xuống bản cập nhật";
     public static final String ERROR_CONNECT_TO_SERVER_MESSAGE = "Không thể kết nối với máy chủ tài nguyên";
     public static final String LAST_VERSION_MESSAGE = "Đang ở phiên bản mới nhất";
+    public static VersionDTO cacheVersionDTO = null;
+    public static void setCacheVersionDTO(VersionDTO versionDTO) {
+       cacheVersionDTO = versionDTO;
+    }
+    public static VersionDTO getCacheVersionDTO() {
+        return cacheVersionDTO;
+    }
 }

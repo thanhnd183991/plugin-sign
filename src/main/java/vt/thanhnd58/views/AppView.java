@@ -6,23 +6,27 @@ package vt.thanhnd58.views;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationContext;
 import vt.thanhnd58.constant.PluginConstant;
 import vt.thanhnd58.dto.VersionDTO;
 import vt.thanhnd58.enums.TypeFile;
+import vt.thanhnd58.progress.download.DownloadTask;
 import vt.thanhnd58.rest.VersionRest;
 import vt.thanhnd58.utils.FileUtils;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.awt.*;
-import java.io.File;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Properties;
 
 /**
  * @author ADMIN
  */
 @SpringBootApplication
-public class AppView extends javax.swing.JFrame {
+public class AppView extends javax.swing.JFrame implements PropertyChangeListener {
 
     private static TrashView trashView = new TrashView();
 
@@ -35,6 +39,7 @@ public class AppView extends javax.swing.JFrame {
      */
     public AppView() {
         initComponents();
+        this.jProgressBar1.setVisible(false);
     }
 
     /**
@@ -49,6 +54,7 @@ public class AppView extends javax.swing.JFrame {
         startBtn = new javax.swing.JButton();
         updateBtn = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jProgressBar1 = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -69,33 +75,39 @@ public class AppView extends javax.swing.JFrame {
         });
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
-        jLabel1.setText("Version " + (String) FileUtils.getPropFileFromFolderContainApp(PluginConstant.PROJECT_PROPS).getProperty("oldVersion"));
+        jLabel1.setText("Version 1");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addGap(57, 57, 57)
-                                .addComponent(startBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
-                                .addComponent(updateBtn)
-                                .addGap(49, 49, 49))
-                        .addGroup(layout.createSequentialGroup()
-                                .addGap(125, 125, 125)
-                                .addComponent(jLabel1)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(57, 57, 57)
+                .addComponent(startBtn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 104, Short.MAX_VALUE)
+                .addComponent(updateBtn)
+                .addGap(49, 49, 49))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(125, 125, 125)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 407, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(39, 39, 39))
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap(36, Short.MAX_VALUE)
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(startBtn)
-                                        .addComponent(updateBtn))
-                                .addGap(30, 30, 30))
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(34, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(startBtn)
+                    .addComponent(updateBtn))
+                .addGap(55, 55, 55)
+                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25))
         );
 
         pack();
@@ -111,63 +123,56 @@ public class AppView extends javax.swing.JFrame {
         boolean isDownload = checkNeedDownload(versionDTO);
         Properties projectProps = FileUtils.getPropFileFromFolderContainApp(PluginConstant.PROJECT_PROPS);
         String updater = projectProps.getProperty("updater");
-        if (versionDTO.isUpdater() && projectProps.size() > 0 && updater.equals("false")) {
-            boolean tempFile = VersionRest.downloadJarFileWithoutResume(versionDTO.getNewVersion(), TypeFile.UPDATER);
-            updateProjectProps(versionDTO);
-            if (tempFile) {
-                FileUtils.overrideUpdaterJarFile();
-            } else {
-                System.out.println("download updater failed");
-            }
-        }
+//        if (versionDTO.isUpdater() && projectProps.size() > 0 && updater.equals("false")) {
+//            boolean tempFile = VersionRest.downloadJarFileWithoutResume(versionDTO.getNewVersion(), TypeFile.UPDATER);
+//            updateProjectProps(versionDTO);
+//            if (tempFile) {
+//                FileUtils.overrideUpdaterJarFile();
+//            } else {
+//                System.out.println("download updater failed");
+//            }
+//        }
 
         //download jar file
         if (isDownload) {
-            boolean tempFile = VersionRest.downloadJarFileWithoutResume(versionDTO.getNewVersion(), TypeFile.HDDT);
-            if (tempFile) {
-                JOptionPane.showMessageDialog(AppView.getFrame(), PluginConstant.START_PROCESS_UPDATE_MESSAGE, PluginConstant.UPDATE_TITLE, JOptionPane.INFORMATION_MESSAGE);
-                updateProjectProps(versionDTO);
-                // start updater file
-                runCmd("java -jar ./" + PluginConstant.UPDATER_JAR_FILE);
-                exit();
-            } else {
-                JOptionPane.showMessageDialog(AppView.getFrame(), PluginConstant.ERROR_DOWNLOAD_UPDATE_FILE, PluginConstant.UPDATE_TITLE, JOptionPane.ERROR_MESSAGE);
-            }
+//            boolean tempFile = VersionRest.downloadJarFileWithoutResume(versionDTO.getNewVersion(), TypeFile.HDDT);
+//            if (tempFile) {
+//                JOptionPane.showMessageDialog(AppView.getFrame(), PluginConstant.START_PROCESS_UPDATE_MESSAGE, PluginConstant.UPDATE_TITLE, JOptionPane.INFORMATION_MESSAGE);
+//                updateProjectProps(versionDTO);
+//                // start updater file
+//                runCmd("java -jar ./" + PluginConstant.UPDATER_JAR_FILE);
+//                exit();
+//            } else {
+//                JOptionPane.showMessageDialog(AppView.getFrame(), PluginConstant.ERROR_DOWNLOAD_UPDATE_FILE, PluginConstant.UPDATE_TITLE, JOptionPane.ERROR_MESSAGE);
+//            }
+            visiableGroupButtons(false);
+            PluginConstant.setCacheVersionDTO(versionDTO);
+//            startDownloadApp(VersionRest.downloadJarFileWithoutResume(versionDTO.getNewVersion(), TypeFile.HDDT), FileUtils.getCurrentFolderContainAppUsingUserDir());
+            startDownloadApp("https://dlcdn.apache.org/netbeans/netbeans-installers/15/Apache-NetBeans-15-bin-windows-x64.exe", FileUtils.getCurrentFolderContainAppUsingUserDir());
         } else {
             JOptionPane.showMessageDialog(AppView.getFrame(), PluginConstant.LAST_VERSION_MESSAGE, PluginConstant.UPDATE_TITLE, JOptionPane.INFORMATION_MESSAGE);
 
         }
     }//GEN-LAST:event_updateBtnActionPerformed
 
-    private void exit() {
-        System.exit(0);
+    public void visiableGroupButtons(boolean b) {
+        this.startBtn.setVisible(b);
+        this.updateBtn.setVisible(b);
+        this.jProgressBar1.setVisible(!b);
     }
 
-    private void updateProjectProps(VersionDTO versionDTO) {
-        Properties projectProps = FileUtils.getPropFileFromFolderContainApp(PluginConstant.PROJECT_PROPS);
-        projectProps.put("newVersion", versionDTO.getNewVersion());
-        projectProps.put("required", String.valueOf(versionDTO.isRequired()));
-        projectProps.put("os", versionDTO.getOsName().toString());
-        projectProps.put("size", String.valueOf(versionDTO.getSize()));
-        if (projectProps.get("yourVersion") == null) {
-            projectProps.put("yourVersion", versionDTO.getNewVersion());
-        }
-        if (versionDTO.isUpdater()) {
-            projectProps.put("updater", String.valueOf(true));
-        } else {
-            projectProps.put("updater", String.valueOf(false));
-        }
-        FileUtils.savePropFileFromFolderContainApp(projectProps, PluginConstant.PROJECT_PROPS);
-    }
-
-    private void runCmd(String cmd) {
-        System.out.println(cmd);
-        Runtime rt = Runtime.getRuntime();
+    private void startDownloadApp(String downloadURL, String saveDir) {
         try {
-            Process pr = rt.exec("cmd /c start /b " + cmd);
-        } catch (IOException e) {
-            e.printStackTrace();
+            jProgressBar1.setValue(0);
+            DownloadTask task = new DownloadTask(this, downloadURL, saveDir);
+            task.addPropertyChangeListener(this);
+            task.execute();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Error executing upload task: " + ex.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
+
     }
 
     private boolean checkNeedDownload(VersionDTO versionDTO) {
@@ -193,25 +198,32 @@ public class AppView extends javax.swing.JFrame {
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(AppView.getFrame(), "start", "title", JOptionPane.OK_OPTION);
     }//GEN-LAST:event_startBtnActionPerformed
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals("progress")) {
+            int progress = (Integer) evt.getNewValue();
+            jProgressBar1.setValue(progress);
+        }
+    }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
 //        mvn clean compile assembly:single
-        var ctx = new SpringApplicationBuilder(AppView.class).headless(false).run(args);
+        ApplicationContext ctx = new SpringApplicationBuilder(AppView.class).headless(false).run(args);
         EventQueue.invokeLater(() -> {
 
-            var ex = ctx.getBean(AppView.class);
+            AppView ex = ctx.getBean(AppView.class);
             ex.setVisible(true);
         });
 
-
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify                     
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JButton startBtn;
     private javax.swing.JButton updateBtn;
-    // End of variables declaration//GEN-END:variables
+
 }

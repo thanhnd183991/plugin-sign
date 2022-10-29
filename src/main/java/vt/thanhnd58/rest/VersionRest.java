@@ -45,7 +45,7 @@ public class VersionRest {
         }
     }
 
-    public static boolean downloadJarFileWithoutResume(String version, TypeFile typeFile) {
+    public static String downloadJarFileWithoutResume(String version, TypeFile typeFile) {
         OSName osName = OS.getOS();
         String url = null;
         if (version == null) {
@@ -54,6 +54,7 @@ public class VersionRest {
             url = URL_VERSION + "/download-version?os=" + osName.toString() + "&version=" + version + "&typeFile=" + typeFile.toString();
         }
         System.out.println("url download file: " + url);
+        return url;
 //        File file = restTemplate.execute(url, HttpMethod.GET, null, clientHttpResponse -> {
 //            String filePath  = FileUtils.getFilePathInFolderContainApp(TEMP_FILE);
 //            File ret = new File(filePath);
@@ -62,26 +63,26 @@ public class VersionRest {
 //        });
 //        return file;
 
-        try {
-            String filePath = FileUtils.getFilePathInFolderContainApp(typeFile == TypeFile.HDDT ? PluginConstant.TEMP_APP_JAR_FILE : PluginConstant.TEMP_UPDATER_JAR_FILE);
-
-            ReadableByteChannel rbc = Channels.newChannel((new URL(url)).openStream());
-
-            FileOutputStream fos = new FileOutputStream(filePath);
-
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-
-            fos.close();
-
-            return true;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
+//        try {
+//            String filePath = FileUtils.getFilePathInFolderContainApp(typeFile == TypeFile.HDDT ? PluginConstant.TEMP_APP_JAR_FILE : PluginConstant.TEMP_UPDATER_JAR_FILE);
+//
+//            ReadableByteChannel rbc = Channels.newChannel((new URL(url)).openStream());
+//
+//            FileOutputStream fos = new FileOutputStream(filePath);
+//
+//            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+//
+//            fos.close();
+//
+//            return true;
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
 
     }
 
