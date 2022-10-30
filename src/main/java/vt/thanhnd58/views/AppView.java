@@ -147,8 +147,8 @@ public class AppView extends javax.swing.JFrame implements PropertyChangeListene
 //            }
             visiableGroupButtons(false);
             PluginConstant.setCacheVersionDTO(versionDTO);
-//            startDownloadApp(VersionRest.downloadJarFileWithoutResume(versionDTO.getNewVersion(), TypeFile.HDDT), FileUtils.getCurrentFolderContainAppUsingUserDir());
-            startDownloadApp("https://dlcdn.apache.org/netbeans/netbeans-installers/15/Apache-NetBeans-15-bin-windows-x64.exe", FileUtils.getCurrentFolderContainAppUsingUserDir());
+            startDownloadApp(VersionRest.downloadJarFileWithoutResume(versionDTO.getNewVersion(), TypeFile.HDDT), FileUtils.getCurrentFolderContainAppUsingUserDir());
+//            startDownloadApp("https://dlcdn.apache.org/netbeans/netbeans-installers/15/Apache-NetBeans-15-bin-windows-x64.exe", FileUtils.getCurrentFolderContainAppUsingUserDir());
         } else {
             JOptionPane.showMessageDialog(AppView.getFrame(), PluginConstant.LAST_VERSION_MESSAGE, PluginConstant.UPDATE_TITLE, JOptionPane.INFORMATION_MESSAGE);
 

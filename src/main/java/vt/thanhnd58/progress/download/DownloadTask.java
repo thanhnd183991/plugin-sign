@@ -82,9 +82,12 @@ public class DownloadTask extends SwingWorker<Void, Void> {
 		if (!isCancelled()) {
 			FileUtils.updateProjectProps();
             JOptionPane.showMessageDialog(gui, PluginConstant.START_PROCESS_UPDATE_MESSAGE, PluginConstant.UPDATE_TITLE, JOptionPane.INFORMATION_MESSAGE);
-			gui.setVisible(true);
+			gui.visiableGroupButtons(true);
 			AppCmd.runCmd("java -jar ./" + PluginConstant.UPDATER_JAR_FILE);
 			AppCmd.exit();
 		}
-	}	
+		else{
+			gui.visiableGroupButtons(true);
+		}
+	}
 }
